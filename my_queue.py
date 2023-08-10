@@ -8,21 +8,22 @@ Classes:
     Queue: Implementation of a queue using Queue_objects.
 '''
 
+from dataclasses import dataclass
+from typing import Any
 
-class Queue_object:
-    '''Class representing an element in the queue.'''
 
-    def __init__(self, value, left, right) -> None:
-        '''
-        Initialize a Queue_object.
+@dataclass(slots=True)
+class QueueObject:
+    '''
+    Class representing an element in the queue.
 
-        :param value: The value of the element.
-        :param left: Reference to the previous element.
-        :param right: Reference to the next element.
-        '''
-        self.value = value
-        self.left = left
-        self.right = right
+    :param value: The value of the element.
+    :param left: Reference to the previous element.
+    :param right: Reference to the next element.
+    '''
+    value: Any
+    left: 'QueueObject'
+    right: 'QueueObject'
 
     def __repr__(self) -> str:
         '''
@@ -33,20 +34,18 @@ class Queue_object:
         return str(self.value)
 
 
+@dataclass(slots=True)
 class Queue:
-    '''Implementation of a queue using Queue_objects.'''
+    '''
+    Implementation of a queue using Queue_objects.
 
-    def __init__(self, first: Queue_object = None, last: Queue_object = None, limit=None) -> None:
-        '''
-        Initialize a Queue.
-
-        :param first: The first element of the queue.
-        :param last: The last element of the queue.
-        :param limit: Maximum limit of elements in the queue. Setting a limit changes insertion time complexity from O(1) to O(n).
-        '''
-        self.first = first
-        self.last = last
-        self.limit = limit
+    :param first: The first element of the queue.
+    :param last: The last element of the queue.
+    :param limit: Maximum limit of elements in the queue. Setting a limit changes insertion time complexity from O(1) to O(n).
+    '''
+    first: QueueObject = None
+    last: QueueObject = None
+    limit: int = None
 
     def append(self, value) -> None:
         '''
@@ -56,13 +55,13 @@ class Queue:
         '''
         if self.limit is None or self.limit > len(self):
             if self.first is None:
-                self.first = Queue_object(value, None, None)
+                self.first = QueueObject(value, None, None)
             elif self.last is None:
-                self.last = Queue_object(value, None, self.first)
+                self.last = QueueObject(value, None, self.first)
                 self.first.left = self.last
             else:
                 temp = self.last
-                self.last = Queue_object(value, None, self.last)
+                self.last = QueueObject(value, None, self.last)
                 temp.left = self.last
 
     def pop(self) -> None:
@@ -72,25 +71,9 @@ class Queue:
             if self.first is not None:
                 self.first.right = None
 
-    def get_first(self) -> Queue_object:
-        '''
-        Get the first element of the queue.
-
-        :return: The first element of the queue.
-        '''
-        return self.first
-
-    def get_last(self) -> Queue_object:
-        '''
-        Get the last element of the queue.
-
-        :return: The last element of the queue.
-        '''
-        return self.last
-
     def add_limit(self, limit: int) -> None:
         '''
-        Set the maximum limit of elements in the queue.
+        Set the maximum limit of elements in the queue. Setting a limit changes insertion time complexity from O(1) to O(n).
 
         :param limit: The maximum limit of elements.
         '''
@@ -134,22 +117,21 @@ class Queue:
 
 if __name__ == '__main__':
 
-    deque_orders = Queue(limit=3)
-    for i in range(3):
+    deque_orders = Queue(limit=7)
+    for i in range(10):
         deque_orders.append(i)
 
-    # elem = deque_orders.get_last()
-    # for i in range(3):
-    #     print(elem.value)
-    #     elem = elem.right
+    elem = deque_orders.last
+    for i in range(4):
+        print(elem.value)
+        elem = elem.right
 
     deque_orders.pop()
     deque_orders.pop()
     deque_orders.pop()
 
-
-    # print('first:', deque_orders.first.value)
-    # print('last:', deque_orders.last.value)
+    print('first:', deque_orders.first.value)
+    print('last:', deque_orders.last.value)
 
     print(len(deque_orders))
 
